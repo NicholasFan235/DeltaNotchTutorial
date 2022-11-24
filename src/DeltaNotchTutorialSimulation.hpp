@@ -97,6 +97,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SmartPointers.hpp"
 #include "UniformG1GenerationalCellCycleModel.hpp"
 #include "MyCellCycleModel.hpp"
+#include "LogFile.hpp"
 /*
  * The next header file defines a simple subcellular reaction network model that includes the functionality
  * for solving each cell's Delta/Notch signalling ODE system at each time step, using information about neighbouring
@@ -126,6 +127,8 @@ public:
      */
     void VertexBasedMonolayerWithDeltaNotch()
     {
+        SetupSingletons();
+        LogFile::Instance()->Set(2, "TestVertexBasedMonolayerWithDeltaNotch");
 
         /* First we create a regular vertex mesh. */
         HoneycombVertexMeshGenerator generator(5, 5);
@@ -199,6 +202,8 @@ public:
         MAKE_PTR(SimpleTargetAreaModifier<2>, p_growth_modifier);
         simulator.AddSimulationModifier(p_growth_modifier);
         simulator.Solve();
+
+        DestroySingletons();
     }
 
     /*
@@ -219,6 +224,8 @@ public:
      */
     void NodeBasedMonolayerWithDeltaNotch()
     {
+        SetupSingletons();
+        LogFile::Instance()->Set(2, "TestNodeBasedMonolayerWithDeltaNotch");
 
         /*
          * Most of the code in this test is the same as in the previous test,
@@ -276,6 +283,8 @@ public:
         simulator.AddForce(p_force);
 
         simulator.Solve();
+
+        DestroySingletons();
     }
     /*
      * EMPTYLINE
@@ -288,6 +297,29 @@ public:
      * Note that, for larger simulations, you may need to unclick "Mask Points" (or similar) so as not to limit the number of glyphs
      * displayed by Paraview.
      */
+
+private:
+
+    void SetupSingletons(unsigned seed)
+    {
+        // Set up what the test suite would do
+        SimulationTime::Instance()->SetStartTime(0.0);
+        //RandomNumberGenerator::Instance()->Reseed(time(NULL));
+        //std::stringstream message;
+        //message << "Reseeding with seed " << std::to_string(seed) << std::endl;
+        //std::cout << message.str() << std::flush;
+        RandomNumberGenerator::Instance()->Reseed(seed);
+        CellPropertyRegistry::Instance()->Clear();
+        CellId::ResetMaxCellId();
+    }
+
+    void DestroySingletons()
+    {
+        // This is from the tearDown method of the test suite
+        SimulationTime::Destroy();
+        RandomNumberGenerator::Destroy();
+        CellPropertyRegistry::Instance()->Clear();
+    }
 };
 
 #endif /*DELTANOTCHTUTORIALSIMULATION_HPP_*/
