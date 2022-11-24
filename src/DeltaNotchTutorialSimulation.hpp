@@ -127,7 +127,7 @@ public:
      */
     void VertexBasedMonolayerWithDeltaNotch()
     {
-        SetupSingletons();
+        SetupSingletons(0);
         LogFile::Instance()->Set(2, "TestVertexBasedMonolayerWithDeltaNotch");
 
         /* First we create a regular vertex mesh. */
@@ -224,7 +224,7 @@ public:
      */
     void NodeBasedMonolayerWithDeltaNotch()
     {
-        SetupSingletons();
+        SetupSingletons(0);
         LogFile::Instance()->Set(2, "TestNodeBasedMonolayerWithDeltaNotch");
 
         /*
